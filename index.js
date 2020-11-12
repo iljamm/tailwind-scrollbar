@@ -1,4 +1,4 @@
-const plugin = require('tailwindcss/plugin');
+const plugin = require( 'tailwindcss/plugin' )
 
 /**
  * Generates a track style, a thumb style, and a thumb hover style for a given
@@ -9,21 +9,21 @@ const plugin = require('tailwindcss/plugin');
  *
  * @return An object containing the generated classes
  */
-const generateScrollbarClasses = (key, value) => ({
-  [`.scrollbar-track-${key}`]: {
-    '--scrollbar-track': value
+const generateScrollbarClasses = ( key, value ) => ({
+  [ `.scrollbar-track-${key}` ]: {
+    '--scrollbar-track': value,
   },
 
-  [`.scrollbar-thumb-${key}`]: {
-    '--scrollbar-thumb': value
+  [ `.scrollbar-thumb-${key}` ]: {
+    '--scrollbar-thumb': value,
   },
 
-  [`.hover\\:scrollbar-thumb-${key}`]: {
+  [ `.hover\\:scrollbar-thumb-${key}` ]: {
     '&::-webkit-scrollbar-thumb:hover': {
-      '--scrollbar-thumb': value
-    }
-  }
-});
+      '--scrollbar-thumb': value,
+    },
+  },
+})
 
 /**
  * Tells an element what to do with --scrollbar-track and --scrollbar-thumb
@@ -33,48 +33,50 @@ const scrollbarBase = {
   '--scrollbar-track': 'initial',
   '--scrollbar-thumb': 'initial',
   'scrollbar-color': 'var(--scrollbar-thumb) var(--scrollbar-track)',
-  
+
   // Make sure the scrollbars are calculated in the elements width
   // NOTE: only has effect in webkit-based browsers, but is only really needed
   // in webkit-based browsers in the first place.
   'overflow': 'overlay',
-  
+
   '&::-webkit-scrollbar-track': {
-    'background-color': 'var(--scrollbar-track)'
+    'background-color': 'var(--scrollbar-track)',
+    'border-radius': '9999px',
   },
 
   '&::-webkit-scrollbar-thumb': {
-    'background-color': 'var(--scrollbar-thumb)'
-  }
-};
+    'background-color': 'var(--scrollbar-thumb)',
+    'border-radius': '9999px',
+  },
+}
 
-module.exports = plugin(function ({ e, addUtilities, theme, addBase }) {
-  const generateScrollbarColorUtilities = (colors, prefix = '') => Object.entries(colors)
-    .reduce((memo, [key, value]) => ({
+module.exports = plugin( function ( { e, addUtilities, theme, addBase, variants } ) {
+  const generateScrollbarColorUtilities = ( colors, prefix = '' ) => Object.entries( colors )
+    .reduce( ( memo, [ key, value ] ) => ({
       ...memo,
       ...(
         typeof value === 'object'
-        ? generateScrollbarColorUtilities(value, `${e(key)}-`)
-        : generateScrollbarClasses(`${prefix}${e(key)}`, value)
-      )
-    }), {});
+          ? generateScrollbarColorUtilities( value, `${e( key )}-` )
+          : generateScrollbarClasses( `${prefix}${e( key )}`, value )
+      ),
+    }), {} )
 
-  addBase({
+  addBase( {
     '*': {
       'scrollbar-color': 'initial',
-      'scrollbar-width': 'initial'
-    }
-  });
+      'scrollbar-width': 'initial',
+    },
+  } )
 
-  addUtilities({
+  addUtilities( {
     '.scrollbar': {
       ...scrollbarBase,
       'scrollbar-width': 'auto',
 
       '&::-webkit-scrollbar': {
-        width: '16px',
-        height: '16px'
-      }
+        width: '12px',
+        height: '12px',
+      },
     },
 
     '.scrollbar-thin': {
@@ -83,10 +85,10 @@ module.exports = plugin(function ({ e, addUtilities, theme, addBase }) {
 
       '&::-webkit-scrollbar': {
         width: '8px',
-        height: '8px'
-      }
+        height: '8px',
+      },
     },
 
-    ...generateScrollbarColorUtilities(theme('colors', {}))
-  });
-});
+    ...generateScrollbarColorUtilities( theme( 'colors', {} ) ),
+  }, variants('mmCustomScrollbar')  )
+} )
